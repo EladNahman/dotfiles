@@ -11,7 +11,8 @@ return {
     local servers = {
       "lua-language-server",
       "typescript-language-server",
-	  "gopls"
+	  "gopls",
+	  "bash-language-serser",
     }
 
     -- Auto-install missing LSPs on startup
