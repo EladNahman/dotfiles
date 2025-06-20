@@ -1,0 +1,7 @@
+[user]
+	name = eladnahman
+	email = eladnahman123@gmail.com
+[credential]
+	helper = store
+[pull]
+	rebase = false
