@@ -40,6 +40,8 @@ APT_PACKAGES=(
 	neovim
 	docker-ce
 	docker-compose
+	node
+	nvm
 	npm
 	curl
 	ripgrep
