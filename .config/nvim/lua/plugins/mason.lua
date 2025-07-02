@@ -13,6 +13,7 @@ return {
       "typescript-language-server",
 	  "gopls",
 	  "bash-language-serser",
+	  "clangd"
     }
 
     -- Auto-install missing LSPs on startup

@@ -33,7 +33,7 @@ return {
 			  map("n", "<leader>r", vim.lsp.buf.rename, bufopts)
 			end
 
-			local servers = { "lua_ls", "ts_ls", "gopls", "bashls" }
+			local servers = { "lua_ls", "ts_ls", "gopls", "bashls", "clangd" }
 
 			for _, server in ipairs(servers) do
 				lspconfig[server].setup({
