@@ -33,6 +33,10 @@ do_brew() {
   fi
   eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
 
+  # Non-official taps need explicit trust where HOMEBREW_REQUIRE_TAP_TRUST is enforced.
+  # No-op on brew versions without `trust` or when the requirement is off.
+  brew trust --tap nikitabobko/tap 2>/dev/null || true
+
   log "Installing packages from Brewfile…"
   brew bundle --file="$DOTFILES/Brewfile"
 }
