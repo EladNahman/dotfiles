@@ -1,0 +1,28 @@
+[include]
+	# Identity (name/email) lives OUTSIDE the repo — per-machine, per-employer.
+	# install.sh creates ~/.gitconfig.local if missing.
+	path = ~/.gitconfig.local
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[credential]
+	helper = osxkeychain
+[push]
+	autoSetupRemote = true
+[alias]
+	poc = "!f(){ \
+    branch=$(git branch --format='%(refname:short)' | grep \"POC-$1\" | head -n1); \
+    if [ -z \"$branch\" ]; then \
+      echo \"No branch matching: POC-$1\" >&2; \
+      return 1; \
+    fi; \
+    git checkout \"$branch\"; \
+		}; f"
+	stat = "status --untracked-files --short"
+	stashu = "stash --include-untracked"
+[pull]
+	rebase = false
+[core]
+	ignorecase = false
