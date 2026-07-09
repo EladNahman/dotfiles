@@ -4,6 +4,9 @@
 # Merged from the old machine's TWO brew installs (Intel /usr/local + ARM /opt/homebrew).
 # On the new machine there is exactly one brew, at /opt/homebrew.
 
+# --- Taps ---
+tap "nikitabobko/tap"    # AeroSpace lives in the developer's tap, not homebrew core
+
 # --- CLI tools ---
 brew "cmake"
 brew "ffmpeg"
@@ -23,7 +26,7 @@ brew "tmux"
 brew "yarn"
 
 # --- Apps (casks) ---
-cask "aerospace"
+cask "nikitabobko/tap/aerospace"
 cask "claude-code"
 cask "docker-desktop"
 cask "kitty"
