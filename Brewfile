@@ -8,7 +8,6 @@
 brew "cmake"
 brew "ffmpeg"
 brew "gh"
-brew "git"
 brew "git-lfs"
 brew "go"                # was a manual installer at /usr/local/go on the old machine
 brew "jq"
@@ -25,18 +24,14 @@ brew "yarn"
 
 # --- Apps (casks) ---
 cask "aerospace"
-cask "discord"
+cask "claude-code"
 cask "docker-desktop"
-cask "google-chrome"
-cask "iterm2"
 cask "kitty"
 cask "logi-options+"
 cask "postman"
-cask "rectangle"
 cask "spotify"
 cask "tableplus"
 # cask "parallels"       # needs a license; the VM itself is migrated separately (see MIGRATION.md)
-# cask "1password"       # you were on 1Password 7 — installing the cask means upgrading to v8; decide first
 
 # NOT here on purpose (IT-managed / pushed by MDM): Company Portal, Microsoft Defender,
 # security/VPN agents, Microsoft Edge, DisplayLink Manager.

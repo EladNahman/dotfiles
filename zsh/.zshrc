@@ -1,8 +1,5 @@
 # ~/.zshrc — managed by ~/dotfiles (symlinked). Edit there, commit, done.
 
-# iTerm2 shell integration (installed by iTerm itself, if present)
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
 # Personal scripts live in the dotfiles repo
 export PATH="$HOME/dotfiles/bin:$PATH"
 

@@ -48,4 +48,4 @@ setup script (not in this repo). Work top to bottom.
 - [ ] `zsh -ic 'echo $PATH'` — one brew (`/opt/homebrew`), nvm node, pnpm, dotfiles/bin all present
 - [ ] `git config user.email` — correct identity
 - [ ] `nvim` — plugins install on first launch (lazy.nvim reads `lazy-lock.json`)
-- [ ] AeroSpace, iTerm2 profile, tmux prefix (C-a) all behave like home
+- [ ] AeroSpace, kitty, tmux prefix (C-a) all behave like home

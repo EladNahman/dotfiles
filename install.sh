@@ -10,7 +10,6 @@
 #   ./install.sh brew       # just Homebrew + Brewfile
 #   ./install.sh links      # just symlink dotfiles into place
 #   ./install.sh langs      # node (nvm), rust, poetry
-#   ./install.sh iterm      # import iTerm2 preferences (run BEFORE first iTerm launch)
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -114,26 +113,14 @@ do_langs() {
   fi
 }
 
-# ---------------------------------------------------------------- iterm
-do_iterm() {
-  if pgrep -xq iTerm2; then
-    warn "Quit iTerm2 first, then re-run './install.sh iterm'"
-    return 1
-  fi
-  log "Importing iTerm2 preferences…"
-  defaults import com.googlecode.iterm2 "$DOTFILES/iterm2/com.googlecode.iterm2.plist"
-  killall cfprefsd 2>/dev/null || true
-}
-
 # ---------------------------------------------------------------- main
 case "$STEP" in
-  all)     do_brew; do_links; do_langs; do_iterm
+  all)     do_brew; do_links; do_langs
            log "Personal setup done. Run the (non-git) work setup script for job tooling." ;;
   brew)    do_brew ;;
   links)   do_links ;;
   langs)   do_langs ;;
-  iterm)   do_iterm ;;
-  *) echo "usage: $0 [all|brew|links|langs|iterm]" >&2; exit 1 ;;
+  *) echo "usage: $0 [all|brew|links|langs]" >&2; exit 1 ;;
 esac
 
 log "Done. Open a new terminal. Then work through MIGRATION.md for the manual bits."

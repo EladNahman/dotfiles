@@ -1,7 +1,7 @@
 # dotfiles
 
 Everything needed to turn a blank Mac into my machine — the **personal** layer only:
-shell, nvim, tmux, AeroSpace, iTerm, general CLI tools. It survives forever and moves
+shell, nvim, tmux, AeroSpace, kitty, general CLI tools. It survives forever and moves
 with me between jobs.
 
 Job/work setup (employer tools, work repos) is intentionally **not in this repo** —
@@ -16,7 +16,7 @@ every machine pulls the same setup.
 # 1. Sign in to GitHub in the browser, then:
 git clone https://github.com/EladNahman/dotfiles ~/dotfiles
 cd ~/dotfiles
-./install.sh          # brew + apps + symlinks + node/rust/poetry + iTerm prefs
+./install.sh          # brew + apps + symlinks + node/rust/poetry
 ```
 
 Then follow **MIGRATION.md** for secrets, auth, and data (one-time stuff a script can't do),
@@ -29,7 +29,7 @@ and run the work setup script.
 | `zsh/` | `~/.zshrc`, `~/.zprofile`, `~/.zshenv` |
 | `git/` | `~/.gitconfig` (identity stays in `~/.gitconfig.local`, per machine) + global ignore |
 | `nvim/` | `~/.config/nvim` (lazy.nvim, plugins pinned by `lazy-lock.json`) |
-| `tmux/`, `aerospace/`, `iterm2/` | tmux conf, `~/.aerospace.toml`, iTerm prefs snapshot |
+| `tmux/`, `aerospace/` | tmux conf, `~/.aerospace.toml` |
 | `claude/` | `~/.claude/settings.json` |
 | `bin/` | personal scripts, on `$PATH` |
 | `Brewfile` | personal CLI tools and apps |
@@ -41,4 +41,4 @@ and run the work setup script.
   Never bare `brew install`. Job-specific tools go in the work script, not here.
 - **Secrets** go in `~/.zshrc.local`; git identity in `~/.gitconfig.local`. Neither is ever committed.
 - **Config drift**: configs are symlinks into this repo, so `git -C ~/dotfiles status` shows any drift. Commit it.
-- Re-running `./install.sh` (or any single step: `brew`, `links`, `langs`, `iterm`) is always safe.
+- Re-running `./install.sh` (or any single step: `brew`, `links`, `langs`) is always safe.
