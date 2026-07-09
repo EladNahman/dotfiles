@@ -78,13 +78,24 @@ do_links() {
   done
 
   # Per-machine files that must exist but are NOT in git
-  if [ ! -f "$HOME/.gitconfig.local" ]; then
-    cat > "$HOME/.gitconfig.local" <<'EOF'
+  if [ ! -f "$HOME/.gitconfig.local" ] || grep -q CHANGE-ME "$HOME/.gitconfig.local"; then
+    if [ -t 0 ]; then
+      printf 'git user.name for this machine: ';  read -r GITNAME
+      printf 'git user.email for this machine: '; read -r GITEMAIL
+      cat > "$HOME/.gitconfig.local" <<EOF
+[user]
+	name = $GITNAME
+	email = $GITEMAIL
+EOF
+      log "wrote ~/.gitconfig.local"
+    else
+      cat > "$HOME/.gitconfig.local" <<'EOF'
 [user]
 	name = CHANGE-ME
 	email = CHANGE-ME
 EOF
-    warn "created ~/.gitconfig.local — set your git name/email in it NOW"
+      warn "created ~/.gitconfig.local with placeholders — edit it, or re-run './install.sh links' interactively"
+    fi
   fi
   if [ ! -f "$HOME/.zshrc.local" ]; then
     cat > "$HOME/.zshrc.local" <<'EOF'
@@ -166,7 +177,7 @@ do_check() {
   local gn ge
   gn="$(git config user.name 2>/dev/null || true)"; ge="$(git config user.email 2>/dev/null || true)"
   case "$gn$ge" in
-    ''|*CHANGE-ME*) printf '    ✗ git identity — set name/email in ~/.gitconfig.local\n'; fail=1 ;;
+    ''|*CHANGE-ME*) printf '    ✗ git identity — edit ~/.gitconfig.local by hand, or re-run ./install.sh links to be prompted\n'; fail=1 ;;
     *) printf '    ✓ git identity: %s <%s>\n' "$gn" "$ge" ;;
   esac
   if [ -f "$HOME/.zshrc.local" ]; then
