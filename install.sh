@@ -10,6 +10,7 @@
 #   ./install.sh brew       # just Homebrew + Brewfile
 #   ./install.sh links      # just symlink dotfiles into place
 #   ./install.sh langs      # node (nvm), rust, poetry
+#   ./install.sh check      # verify the whole setup — safe anytime, changes nothing
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -58,16 +59,23 @@ link() {
   log "linked $dst"
 }
 
+LINKS=(
+  "zsh/.zshrc:$HOME/.zshrc"
+  "zsh/.zprofile:$HOME/.zprofile"
+  "zsh/.zshenv:$HOME/.zshenv"
+  "git/.gitconfig:$HOME/.gitconfig"
+  "git/ignore:$HOME/.config/git/ignore"
+  "nvim:$HOME/.config/nvim"
+  "tmux/tmux.conf:$HOME/.config/tmux/tmux.conf"
+  "aerospace/aerospace.toml:$HOME/.aerospace.toml"
+  "claude/settings.json:$HOME/.claude/settings.json"
+)
+
 do_links() {
-  link zsh/.zshrc              "$HOME/.zshrc"
-  link zsh/.zprofile           "$HOME/.zprofile"
-  link zsh/.zshenv             "$HOME/.zshenv"
-  link git/.gitconfig          "$HOME/.gitconfig"
-  link git/ignore              "$HOME/.config/git/ignore"
-  link nvim                    "$HOME/.config/nvim"
-  link tmux/tmux.conf          "$HOME/.config/tmux/tmux.conf"
-  link aerospace/aerospace.toml "$HOME/.aerospace.toml"
-  link claude/settings.json    "$HOME/.claude/settings.json"
+  local entry
+  for entry in "${LINKS[@]}"; do
+    link "${entry%%:*}" "${entry#*:}"
+  done
 
   # Per-machine files that must exist but are NOT in git
   if [ ! -f "$HOME/.gitconfig.local" ]; then
@@ -117,6 +125,60 @@ do_langs() {
   fi
 }
 
+# ---------------------------------------------------------------- check
+do_check() {
+  local fail=0 entry src dst t
+  # make brew/nvm/cargo/pipx tools visible to this non-interactive shell
+  eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)" || true
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$(brew --prefix nvm 2>/dev/null)/nvm.sh" ] && . "$(brew --prefix nvm)/nvm.sh" >/dev/null 2>&1
+  export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
+  log "Symlinks:"
+  for entry in "${LINKS[@]}"; do
+    src="$DOTFILES/${entry%%:*}"; dst="${entry#*:}"
+    if [ "$(readlink "$dst" 2>/dev/null)" = "$src" ]; then
+      printf '    ✓ %s\n' "$dst"
+    else
+      printf '    ✗ %s — not linked (run: ./install.sh links)\n' "$dst"; fail=1
+    fi
+  done
+
+  log "Brew packages:"
+  if brew bundle check --file="$DOTFILES/Brewfile" >/dev/null 2>&1; then
+    printf '    ✓ everything in Brewfile installed\n'
+  else
+    printf '    ✗ missing (run: ./install.sh brew):\n'
+    brew bundle check --verbose --file="$DOTFILES/Brewfile" 2>/dev/null | sed 's/^/      /' || true
+    fail=1
+  fi
+
+  log "Tools on PATH:"
+  for t in nvim tmux jq rg gh node npm pnpm yarn go cargo poetry claude; do
+    if command -v "$t" >/dev/null 2>&1; then
+      printf '    ✓ %-7s %s\n' "$t" "$(command -v "$t")"
+    else
+      printf '    ✗ %s missing\n' "$t"; fail=1
+    fi
+  done
+
+  log "Per-machine files:"
+  local gn ge
+  gn="$(git config user.name 2>/dev/null || true)"; ge="$(git config user.email 2>/dev/null || true)"
+  case "$gn$ge" in
+    ''|*CHANGE-ME*) printf '    ✗ git identity — set name/email in ~/.gitconfig.local\n'; fail=1 ;;
+    *) printf '    ✓ git identity: %s <%s>\n' "$gn" "$ge" ;;
+  esac
+  if [ -f "$HOME/.zshrc.local" ]; then
+    printf '    ✓ ~/.zshrc.local exists\n'
+  else
+    printf '    ✗ ~/.zshrc.local missing (secrets)\n'; fail=1
+  fi
+
+  echo
+  if [ "$fail" = 0 ]; then log "All checks passed."; else warn "Some checks failed — fix the ✗ lines above and re-run './install.sh check'"; exit 1; fi
+}
+
 # ---------------------------------------------------------------- main
 case "$STEP" in
   all)     do_brew; do_links; do_langs
@@ -124,7 +186,8 @@ case "$STEP" in
   brew)    do_brew ;;
   links)   do_links ;;
   langs)   do_langs ;;
-  *) echo "usage: $0 [all|brew|links|langs]" >&2; exit 1 ;;
+  check)   do_check ;;
+  *) echo "usage: $0 [all|brew|links|langs|check]" >&2; exit 1 ;;
 esac
 
 log "Done. Open a new terminal. Then work through MIGRATION.md for the manual bits."
